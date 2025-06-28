@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>😤📉 They don’t follow me back on Instagram?! 😭📱</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #121212;
+      color: #fff;
+      padding: 30px;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    input[type="file"] {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      background: #3897f0;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+    }
+    a {
+      color: #84caff;
+      text-decoration: none;
+    }
+    #resultControls, #resultHeading, #result {
+      display: none;
+    }
+  
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  justify-content: flex-end;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 26px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #66bb6a;
+}
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+</style>
+<style>
+:root {
+  --bg-light: #ffffff;
+  --text-light: #000000;
+  --bg-dark: #121212;
+  --text-dark: #ffffff;
+}
+body {
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  transition: background-color 0.3s, color 0.3s;
+}
+body.dark {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+</style></head>
+<body>
+<div class="toggle-switch" style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; justify-content: flex-start;">
+<label class="switch">
+<input id="modeSwitch" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<h1>😤📉 They don’t follow me back on Instagram?! 😭📱</h1>
+<section>
+<h2>⬇️ Download Instructions</h2>
+<ol>
+<li>Go to the <a href="https://accountscenter.instagram.com/info_and_permissions" target="_blank">Your Information and Permissions</a> page under Accounts Center</li>
+<li>Click on "Download your information"</li>
+<li>Click on "Download or transfer your information"</li>
+<li>Choose the relevant Instagram account</li>
+<li>Click on "Some of your information"</li>
+<li>Scroll to "Connections" and select "Followers and following"</li>
+<li>Choose "Download to device"</li>
+<li>Select "All time" for Date range</li>
+<li>Format: HTML, Media quality: Low</li>
+<li>Wait for Instagram to email the archive</li>
+</ol>
+<h2>⬆️ Upload Instructions</h2>
+<ol>
+<li>Unzip the downloaded folder</li>
+<li>Click into the <code>followers_and_following</code> folder</li>
+<li>Open the <code>connections</code> folder</li>
+<li>Find <code>followers.html</code> (or <code>followers_1.html</code>) and <code>following.html</code></li>
+<li>Upload below to check who's not following back</li>
+</ol>
+<p style="font-size: 0.9em; opacity: 0.7;"><strong>Transparency:</strong> This runs locally in your browser and does <u>not</u> upload or save any data.</p>
+</section>
+<h2>✅ Upload Your Files</h2><label>Upload followers.html</label>
+<input accept=".html" id="followersFile" type="file"/>
+<label>Upload following.html</label>
+<input accept=".html" id="followingFile" type="file"/>
+<button onclick="compare()">Compare</button>
+<h2 id="resultHeading" style="display: none;">❌ Not Following You Back</h2><div id="resultControls" style="display: none;">
+<label><input id="selectAll" onclick="toggleSelectAll()" type="checkbox"/> Select All</label>
+<button onclick="openSelectedTabs()">Open Selected</button>
+</div>
+<div id="counters" style="display: none;  margin-top: 1rem; flex-wrap: wrap; align-items: center; gap: 10px; width: 100%;"><div><strong>Total:</strong> <span id="totalCount">0</span> | <strong>Selected:</strong> <span id="selectedCount">0</span></div><button onclick="openSelectedTabs()">Open Selected</button><button onclick="toggleSelectAll(true)">Select All</button><button onclick="deselectAll()">Deselect All</button><div style="font-size: 0.9em; color: orange; margin-left: auto;">⚠️ Opening too many tabs at once may trigger a pop-up blocker or slow down your browser.</div><button onclick="selectNext10()">Select Next 10</button><button onclick="selectLast10()">Select Last 10</button></div><hr style="margin: 10px 0; border: none; border-top: 1px solid #ccc;"/>
+<ul id="result" style="display: none;  margin-top: 1rem; padding-left: 0; list-style: none;"></ul>
+<script>
+// Initial mode detection
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+if (prefersDark) {
+  document.body.classList.add('dark');
+  document.getElementById('modeSwitch').checked = true;
+}
+
+document.getElementById('modeSwitch').addEventListener('change', function() {
+  if (this.checked) {
+    document.body.classList.add('dark');
+  } else {
+    document.body.classList.remove('dark');
+  }
+});
+
+    let followersHTML = "", followingHTML = "";
+
+    document.getElementById('followersFile').addEventListener('change', e => {
+      const reader = new FileReader();
+      reader.onload = () => followersHTML = reader.result;
+      reader.readAsText(e.target.files[0]);
+    });
+
+    document.getElementById('followingFile').addEventListener('change', e => {
+      const reader = new FileReader();
+      reader.onload = () => followingHTML = reader.result;
+      reader.readAsText(e.target.files[0]);
+    });
+
+    function extractUsernames(html) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const links = doc.querySelectorAll("a[href*='instagram.com']");
+      const usernames = new Set();
+      links.forEach(link => {
+        const match = link.href.match(/instagram\.com\/(.*?)(\/)?$/);
+        if (match && match[1]) {
+          usernames.add(match[1].toLowerCase());
+        }
+      });
+      return usernames;
+    }
+
+    function compare() {
+      if (!followersHTML || !followingHTML) {
+        alert("Please upload both files before comparing.");
+        return;
+      }
+
+      const followers = extractUsernames(followersHTML);
+      const following = extractUsernames(followingHTML);
+      const notFollowingBack = [...following].filter(user => !followers.has(user)).sort();
+
+      const result = document.getElementById('result');
+      result.innerHTML = "";
+
+      notFollowingBack.forEach(user => {
+        const li = document.createElement('li');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'userCheckbox';
+        checkbox.value = user;
+
+        const link = document.createElement('a');
+        link.href = `https://www.instagram.com/${user}`;
+        link.target = '_blank';
+        link.textContent = user;
+
+        li.appendChild(checkbox);
+        li.appendChild(document.createTextNode(" "));
+        li.appendChild(link);
+        result.appendChild(li);
+      });
+
+      document.getElementById('resultControls').style.display = 'block';
+      document.getElementById('resultHeading').style.display = 'block';
+      document.getElementById('counters').style.display = 'block';document.getElementById('resultControls').style.display = 'block';document.getElementById('resultHeading').style.display = 'block';document.getElementById('result').style.display = 'block';document.getElementById('openXContainer').style.display = 'block';
+    }
+
+    function toggleSelectAll() {
+      const checkboxes = document.querySelectorAll('.userCheckbox');
+      const checked = document.getElementById('selectAll').checked;
+      checkboxes.forEach(cb => cb.checked = checked);
+    }
+
+    function openSelectedTabs() {
+      const checkboxes = document.querySelectorAll('.userCheckbox:checked');
+      checkboxes.forEach(cb => {
+        window.open("https://www.instagram.com/" + cb.value, '_blank');
+      });
+    }
+  
+const toggleBtn = document.getElementById('toggleMode');
+toggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  toggleBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+});
+
+let lastChecked = null;
+document.addEventListener('click', function(e) {
+  if (!e.target.classList.contains('userCheckbox')) return;
+
+  if (e.shiftKey && lastChecked) {
+    const checkboxes = [...document.querySelectorAll('.userCheckbox')];
+    const start = checkboxes.indexOf(e.target);
+    const end = checkboxes.indexOf(lastChecked);
+    const [min, max] = [Math.min(start, end), Math.max(start, end)];
+
+    for (let i = min; i <= max; i++) {
+      checkboxes[i].checked = lastChecked.checked;
+    }
+  }
+
+  lastChecked = e.target;
+});
+
+function updateSelectedCount() {
+  const selected = document.querySelectorAll('.userCheckbox:checked').length;
+  document.getElementById('selectedCount').textContent = selected;
+}
+
+function deselectAll() {
+  document.querySelectorAll('.userCheckbox').forEach(cb => cb.checked = false);
+  updateSelectedCount();
+}
+
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('userCheckbox')) {
+    updateSelectedCount();
+  }
+});
+
+function compare() {
+  if (!followersHTML || !followingHTML) {
+    alert("Please upload both files before comparing.");
+    return;
+  }
+
+  const followers = extractUsernames(followersHTML);
+  const following = extractUsernames(followingHTML);
+  const notFollowingBack = [...following].filter(user => !followers.has(user)).sort();
+
+  const result = document.getElementById('result');
+  result.innerHTML = "";
+
+  notFollowingBack.forEach((user, index) => {
+    const li = document.createElement('li');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'userCheckbox';
+    checkbox.value = user;
+    checkbox.onchange = updateSelectedCount;
+
+    const link = document.createElement('a');
+    link.href = `https://www.instagram.com/${user}`;
+    link.target = '_blank';
+    link.textContent = user;
+
+    const number = document.createElement('strong');
+    number.textContent = (index + 1).toString().padStart(3, '0') + ". ";
+
+    li.appendChild(number);
+    li.appendChild(checkbox);
+    li.appendChild(document.createTextNode(" "));
+    li.appendChild(link);
+    result.appendChild(li);
+  });
+
+  document.getElementById('totalCount').textContent = notFollowingBack.length;
+  document.getElementById('selectedCount').textContent = 0;
+  document.getElementById('counters').style.display = 'block';
+  document.getElementById('resultControls').style.display = 'block';
+  document.getElementById('resultHeading').style.display = 'block';
+  document.getElementById('counters').style.display = 'block';document.getElementById('resultControls').style.display = 'block';document.getElementById('resultHeading').style.display = 'block';document.getElementById('result').style.display = 'block';document.getElementById('openXContainer').style.display = 'block';
+}
+
+let openedIndices = new Set();
+function openNextX() {
+  const count = parseInt(document.getElementById("openCountInput").value);
+  const checkboxes = Array.from(document.querySelectorAll(".userCheckbox"));
+  let opened = 0;
+  for (let i = 0; i < checkboxes.length && opened < count; i++) {
+    if (checkboxes[i].checked && !openedIndices.has(i)) {
+      const username = checkboxes[i].value;
+      window.open("https://www.instagram.com/" + username, "_blank");
+      openedIndices.add(i);
+      opened++;
+    }
+  }
+}
+
+function selectNext10() {
+  const checkboxes = Array.from(document.querySelectorAll(".userCheckbox"));
+  const selectedIndexes = checkboxes.map((cb, i) => cb.checked ? i : null).filter(i => i !== null);
+  let start = 0;
+  if (selectedIndexes.length > 0) {
+    start = selectedIndexes[selectedIndexes.length - 1] + 1;
+  }
+  for (let i = start; i < checkboxes.length && i < start + 10; i++) {
+    checkboxes[i].checked = true;
+  }
+  updateSelectedCount();
+}
+
+function selectLast10() {
+  const checkboxes = Array.from(document.querySelectorAll(".userCheckbox"));
+  const selectedIndexes = checkboxes.map((cb, i) => cb.checked ? i : null).filter(i => i !== null);
+  let start = checkboxes.length - 1;
+  if (selectedIndexes.length > 0) {
+    start = selectedIndexes[0] - 1;
+  }
+  const end = Math.max(0, start - 9);
+  for (let i = start; i >= end; i--) {
+    checkboxes[i].checked = true;
+  }
+  updateSelectedCount();
+}
+
+function selectNext10() {
+  const checkboxes = Array.from(document.querySelectorAll(".userCheckbox"));
+  const selectedIndexes = checkboxes.map((cb, i) => cb.checked ? i : null).filter(i => i !== null);
+  let start = 0;
+  if (selectedIndexes.length > 0) {
+    start = selectedIndexes[selectedIndexes.length - 1] + 1;
+  }
+  checkboxes.forEach(cb => cb.checked = false); // Deselect all
+  for (let i = start; i < checkboxes.length && i < start + 10; i++) {
+    checkboxes[i].checked = true;
+  }
+  updateSelectedCount();
+}
+
+function selectLast10() {
+  const checkboxes = Array.from(document.querySelectorAll(".userCheckbox"));
+  const selectedIndexes = checkboxes.map((cb, i) => cb.checked ? i : null).filter(i => i !== null);
+  let start = checkboxes.length - 1;
+  if (selectedIndexes.length > 0) {
+    start = selectedIndexes[0] - 1;
+  }
+  checkboxes.forEach(cb => cb.checked = false); // Deselect all
+  const end = Math.max(0, start - 9);
+  for (let i = start; i >= end; i--) {
+    checkboxes[i].checked = true;
+  }
+  updateSelectedCount();
+}
+</script>
+</body>
+</html>
